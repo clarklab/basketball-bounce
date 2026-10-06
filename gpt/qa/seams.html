@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Basketball seam inspection — six sides</title>
+<style>
+* {box-sizing:border-box} html,body {margin:0;background:#090909;color:#ccc;font:14px system-ui,sans-serif} main {width:100vw;height:100vh;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,1fr)} .view {position:relative;min-width:0;min-height:0} canvas {display:block;width:100%;height:100%} .label{position:absolute;bottom:15px;left:0;right:0;text-align:center;color:#c3b2a0;letter-spacing:.06em;font-size:13px;pointer-events:none}
+</style>
+</head>
+<body><main id="views"></main>
+<script type="module">
+import * as THREE from 'three';
+import { createBall } from '../src/ball.js';
+import { SEAM_BASIS } from '../src/seams.js';
+const [x,y,z] = SEAM_BASIS.map(v=>new THREE.Vector3(...v));
+const views=[['FRONT',z,y],['RIGHT',x,y],['BACK',z.clone().negate(),y],['LEFT',x.clone().negate(),y],['TOP',y,z.clone().negate()],['BOTTOM',y.clone().negate(),z]];
+for(const [label,normal,up] of views){
+ const element=document.createElement('div'); element.className='view';
+ const canvas=document.createElement('canvas'); const name=document.createElement('div');name.className='label';name.textContent=label;
+ element.append(canvas,name);document.querySelector('#views').append(element);
+ const renderer=new THREE.WebGLRenderer({canvas,antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.15;
+ const scene=new THREE.Scene();scene.background=new THREE.Color('#090909');
+ const camera=new THREE.OrthographicCamera(-1.4,1.4,1.4,-1.4,.1,10); camera.position.copy(normal).multiplyScalar(3);camera.up.copy(up);camera.lookAt(0,0,0);
+ const light=new THREE.DirectionalLight('#fff0dd',2.4);light.position.copy(normal).multiplyScalar(3).addScaledVector(up,2);scene.add(light);scene.add(new THREE.AmbientLight('#ffffff',1.1));
+ scene.add(createBall(1));
+ function render(){const w=element.clientWidth,h=element.clientHeight;renderer.setSize(w,h,false);const aspect=w/h;camera.left=-1.4*aspect;camera.right=1.4*aspect;camera.updateProjectionMatrix();renderer.render(scene,camera);}
+ window.addEventListener('resize',render);render();
+}
+</script></body></html>
