@@ -1,0 +1,14 @@
+# One site: the picker at /, the two scenes at /claude and /gpt.
+# Leave the Netlify base directory empty (the repository root).
+[build]
+  command = "sh build.sh"
+  publish = "_site"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# Vite fingerprints these file names, so they can be cached for good.
+[[headers]]
+  for = "/gpt/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
