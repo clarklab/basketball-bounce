@@ -25,6 +25,7 @@
       -webkit-user-select: none;
       -webkit-tap-highlight-color: transparent;
     }
+    #scene:focus-visible { outline: 2px solid #fff; outline-offset: -4px; }
     #mute {
       position: fixed;
       top: max(12px, env(safe-area-inset-top));
@@ -60,8 +61,8 @@
   </style>
 </head>
 <body>
-  <canvas id="scene" role="img" aria-label="A basketball resting on a hardwood court. Tap the ball, or press space, to toss it up."></canvas>
-  <button id="mute" type="button" aria-pressed="false" aria-label="Turn sound off">
+  <canvas id="scene" tabindex="0" role="img" aria-label="A basketball resting on a hardwood court. Tap the ball, or press space, to toss it up."></canvas>
+  <button id="mute" type="button" aria-pressed="false" aria-label="Mute sound">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
       <path d="M4 9.5v5h3.5L12 18.5v-13L7.5 9.5z" fill="currentColor"/>
       <path class="on" d="M15.5 9a4.2 4.2 0 0 1 0 6M18 6.5a7.8 7.8 0 0 1 0 11"/>

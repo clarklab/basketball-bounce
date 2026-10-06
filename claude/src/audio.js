@@ -68,7 +68,7 @@ export function createAudio() {
     // Browsers only allow sound after a user gesture.
     unlock() {
       if (!ctx) build();
-      if (ctx && ctx.state === 'suspended') ctx.resume();
+      if (ctx && ctx.state !== 'running') ctx.resume().catch(() => {});
     },
     setMuted(value) {
       muted = value;

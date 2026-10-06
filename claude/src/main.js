@@ -117,6 +117,8 @@ function start() {
     // A toss carries the ball to just under the top edge of the view.
     const top = camera.position[1] + (1 - VIEW.lensShift) * tanHalfFov * VIEW.distance;
     tossSpeed = 1.015 * Math.sqrt(2 * GRAVITY * Math.max(0.3, top - 2.3 * R));
+    // Resizing clears the canvas, so redraw now rather than a frame later.
+    step(0);
     wake();
   }
 
@@ -144,8 +146,23 @@ function start() {
     const hit = aim(event);
     if (hit.distance <= (event.pointerType === 'mouse' ? 1.1 : 1.4)) throwBall(hit.x, hit.y);
   });
+  // A touch only counts as a user gesture once the finger lifts.
+  canvas.addEventListener('pointerup', () => audio.unlock());
+  canvas.addEventListener('touchend', () => audio.unlock(), { passive: true });
+
+  // The ball moves under a still mouse, so the cursor is rechecked every frame.
+  let hover = null;
+  function updateCursor() {
+    const cursor = hover && aim(hover).distance <= 1.1 ? 'pointer' : '';
+    if (canvas.style.cursor !== cursor) canvas.style.cursor = cursor;
+  }
   canvas.addEventListener('pointermove', (event) => {
-    canvas.style.cursor = aim(event).distance <= 1.1 ? 'pointer' : '';
+    hover = event.pointerType === 'mouse' ? { clientX: event.clientX, clientY: event.clientY } : null;
+    updateCursor();
+  });
+  canvas.addEventListener('pointerleave', () => {
+    hover = null;
+    updateCursor();
   });
   window.addEventListener('keydown', (event) => {
     if (event.target === muteButton || event.repeat) return;
@@ -161,7 +178,6 @@ function start() {
   const applyMute = () => {
     audio.setMuted(muted);
     muteButton.setAttribute('aria-pressed', String(muted));
-    muteButton.setAttribute('aria-label', muted ? 'Turn sound on' : 'Turn sound off');
   };
   applyMute();
   muteButton.addEventListener('click', () => {
@@ -189,6 +205,7 @@ function start() {
     if (peak && peak.depth > 0.003 && peak.depth > R - ball.p[1] + 0.002) setPose(peak.p, peak.q, peak.s);
     else setPose(ball.p, ball.q, ball.s);
     renderer.render(pose);
+    updateCursor();
   }
   function tick(now) {
     request = 0;
@@ -199,6 +216,12 @@ function start() {
   }
 
   new ResizeObserver(layout).observe(canvas);
+  // Moving the window to a screen with another pixel density changes no CSS size.
+  const watchDensity = () => {
+    const query = window.matchMedia(`(resolution: ${window.devicePixelRatio}dppx)`);
+    query.addEventListener('change', () => { layout(); watchDensity(); }, { once: true });
+  };
+  watchDensity();
   canvas.addEventListener('webglcontextrestored', wake);
   layout();
 
