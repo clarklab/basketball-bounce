@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#000000">
+  <meta name="description" content="A basketball on a hardwood court. Tap it to toss it up and watch it bounce.">
+  <title>Basketball Bounce</title>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      background: #000;
+      overflow: hidden;
+      overscroll-behavior: none;
+    }
+    #scene {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    #mute {
+      position: fixed;
+      top: max(12px, env(safe-area-inset-top));
+      right: max(12px, env(safe-area-inset-right));
+      width: 40px;
+      height: 40px;
+      padding: 9px;
+      border: 0;
+      border-radius: 50%;
+      background: none;
+      color: #fff;
+      opacity: 0.3;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    #mute:hover, #mute:focus-visible { opacity: 0.85; }
+    #mute:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+    #mute svg { display: block; width: 100%; height: 100%; }
+    #mute .off, #mute[aria-pressed="true"] .on { display: none; }
+    #mute[aria-pressed="true"] .off { display: inline; }
+    #unsupported {
+      display: none;
+      position: fixed;
+      inset: 0;
+      place-content: center;
+      padding: 24px;
+      color: #c9a27a;
+      font: 16px/1.5 system-ui, sans-serif;
+      text-align: center;
+    }
+    .unsupported #unsupported { display: grid; }
+    .unsupported #scene, .unsupported #mute { display: none; }
+  </style>
+</head>
+<body>
+  <canvas id="scene" role="img" aria-label="A basketball resting on a hardwood court. Tap the ball, or press space, to toss it up."></canvas>
+  <button id="mute" type="button" aria-pressed="false" aria-label="Turn sound off">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M4 9.5v5h3.5L12 18.5v-13L7.5 9.5z" fill="currentColor"/>
+      <path class="on" d="M15.5 9a4.2 4.2 0 0 1 0 6M18 6.5a7.8 7.8 0 0 1 0 11"/>
+      <path class="off" d="M16 9.5l5 5M21 9.5l-5 5"/>
+    </svg>
+  </button>
+  <p id="unsupported">This scene needs WebGL 2, which this browser does not provide.</p>
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>
